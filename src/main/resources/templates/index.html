@@ -71,9 +71,36 @@
     }
 </style>
 <script>
+
+    iTime = 0;
+    function timer() {
+        if (iTime == 5 && $("#cep").val().replace( /\D/g, '').length >= 8) {
+            $.getJSON('/cep?address='+$("#cep").val().replace( /\D/g, ''), function(data) {
+                $("#cidade")[0].parentElement.MaterialTextfield.change(data.localidade);
+                $("#uf")[0].parentElement.MaterialTextfield.change(data.uf);
+                $("#bairro")[0].parentElement.MaterialTextfield.change(data.bairro);
+            });
+        }
+        iTime += 1;
+        console.log(iTime);
+    }
+
     $(document).ready(function () {
         $("#cpf").mask('000.000.000-00', {reverse: true});
         $("#cep").mask('00000-000', {reverse: true});
+
+        var idleInterval = setInterval(timer, 500);
+
+        $("#cep").on('input', function() {
+            if ($("#cep").val().replace( /\D/g, '').length == 8) {
+                iTime = 5;
+            } else {
+                iTime = 0;
+            }
+        });
+        $("#cep").focusout(function(){
+            iTime = 5;
+        });
     });
 </script>
 <body>
